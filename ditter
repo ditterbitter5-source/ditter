@@ -1,469 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DitterBitter Sports Bet Tracker</title>
-  <!-- Playfair Display for title -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    html {
-      font-family: Inter, Arial, sans-serif;
-      background: linear-gradient(135deg, #1b1133 0%, #231344 100%);
-      min-height: 100%;
-    }
-    body {
-      background: transparent;
-      color: #e2e8f0;
-      margin: 0;
-    }
-    a {
-      color: #a259ff;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    a:hover {
-      color: #fff;
-      text-shadow: 0 0 8px #a259ffcc;
-      text-decoration: underline;
-    }
-    .flex { display: flex; }
-    .flex-col { flex-direction: column; }
-    .flex-row { flex-direction: row; }
-    .items-center { align-items: center; }
-    .justify-center { justify-content: center; }
-    .justify-between { justify-content: space-between; }
-    .p-4 { padding: 1rem; }
-    .p-6 { padding: 1.5rem; }
-    .mb-2 { margin-bottom: .5rem; }
-    .mb-4 { margin-bottom: 1rem; }
-    .mb-6 { margin-bottom: 1.5rem; }
-    .mb-8 { margin-bottom: 2rem; }
-    .mt-2 { margin-top: .5rem; }
-    .mt-4 { margin-top: 1rem; }
-    .mt-8 { margin-top: 2rem; }
-    .rounded-lg { border-radius: .5rem; }
-    .rounded-xl { border-radius: .75rem; }
-    .rounded-2xl { border-radius: 1rem; }
-    .shadow-md { box-shadow: 0 4px 16px -2px #a259ff33, 0 1.5px 5px -2px #0006; }
-    .shadow-xl { box-shadow: 0 20px 25px -5px #a259ff22, 0 8px 10px -6px #0001; }
-    .bg-purple { background: linear-gradient(90deg,#a259ff 60%,#7f42e6 100%); }
-    .bg-card {
-      background: linear-gradient(135deg, #261945 70%, #291c52 100%);
-      backdrop-filter: blur(6px);
-      border: 1px solid #a259ff18;
-    }
-    .bg-green { background: linear-gradient(90deg,#16a34a 70%,#2ee59d 100%); }
-    .bg-red { background: linear-gradient(90deg,#dc2626 70%,#f87171 100%); }
-    .bg-yellow { background: linear-gradient(90deg,#eab308 80%,#fde047 100%); }
-    .bg-gray { background: #312354; }
-    .text-white { color: #fff; }
-    .text-purple { color: #a259ff; }
-    .text-yellow { color: #fde047; }
-    .text-sm { font-size: .875rem; }
-    .text-lg { font-size: 1.125rem; }
-    .text-xl { font-size: 1.25rem; }
-    .text-2xl { font-size: 1.5rem; }
-    .font-bold { font-weight: 700; }
-    .font-semibold { font-weight: 600; }
-    .uppercase { text-transform: uppercase; }
-    .w-full { width: 100%; }
-    .max-w-3xl { max-width: 48rem; }
-    .gap-4 { gap: 1rem; }
-    .gap-6 { gap: 1.5rem; }
-    .block { display: block; }
-    .hidden { display: none; }
-    .inline-flex { display: inline-flex; }
-    .overflow-x-auto { overflow-x: auto; }
-    .badge {
-      padding: .25em .75em;
-      border-radius: 9999px;
-      font-size: .85em;
-      font-weight: 700;
-      letter-spacing: .02em;
-      display: inline-block;
-      border: 1.5px solid transparent;
-      box-shadow: 0 2px 8px 0 #a259ff22;
-    }
-    .badge-win {
-      background: linear-gradient(90deg,#16a34a44 60%,#2ee59d33 100%);
-      color: #4ade80;
-      border-color: #22c55e;
-      text-shadow: 0 0 4px #2ee59d77;
-    }
-    .badge-loss {
-      background: linear-gradient(90deg,#dc262633 70%,#f8717133 100%);
-      color: #f87171;
-      border-color: #dc2626;
-    }
-    .badge-pending {
-      background: linear-gradient(90deg,#eab30833 80%,#fde04755 100%);
-      color: #fde047;
-      border-color: #eab308;
-    }
-    .badge-void {
-      background: #6b728022;
-      color: #d1d5db;
-      border-color: #6b7280;
-    }
-    /* Playfair for title, Arial for summary labels */
-    .site-title {
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-shadow: 0 2px 18px #a259ff44;
-    }
-    .summary-label {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 1.03rem;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: #eee9c9;
-      opacity: 0.91;
-    }
-    /* Glassy effect for bet cards */
-    .bet-card {
-      background: linear-gradient(120deg, #261945dd 65%, #2b1e4eaa 100%);
-      backdrop-filter: blur(4px);
-      border: 1px solid #a259ff33;
-      box-shadow: 0 1.5px 10px 0 #a259ff22;
-      transition: transform 0.09s, box-shadow 0.14s;
-    }
-    .bet-card:hover {
-      transform: translateY(-2px) scale(1.011);
-      box-shadow: 0 4px 32px 0 #a259ff44, 0 1.5px 12px 0 #0004;
-      border-color: #a259ffa2;
-    }
-    @media (max-width: 600px) {
-      .text-2xl { font-size: 1.25rem; }
-      .max-w-3xl { padding: 0; }
-      .p-6 { padding: 1rem; }
-    }
-    /* Scrollable bet list area */
-    #betListContainer {
-      max-height: 460px;
-      overflow-y: auto;
-      padding-right: 2px;
-      margin-bottom: 2rem;
-      border-radius: 1rem;
-      background: #23194485;
-      border: 1px solid #a259ff17;
-      box-shadow: 0 1.5px 8px 0 #a259ff22;
-    }
-    #betListContainer::-webkit-scrollbar {
-      width: 8px;
-      background: #1b123a;
-    }
-    #betListContainer::-webkit-scrollbar-thumb {
-      background: #a259ff55;
-      border-radius: 8px;
-    }
-    #betListContainer { scrollbar-width: thin; scrollbar-color: #a259ff66 #22103a; }
-    /* Login/Logout Button Style */
-    .login-btn, .logout-btn {
-      background: #a259ff;
-      color: #fff;
-      border: none;
-      border-radius: 0.5em;
-      padding: 0.5em 1.25em;
-      font-weight: 600;
-      font-size: 1rem;
-      margin: 0.2em;
-      box-shadow: 0 2px 12px #a259ff55;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .login-btn:hover, .logout-btn:hover { background: #7f42e6; }
-  </style>
-</head>
-<body class="p-4 flex flex-col items-center">
-  <!-- HEADER -->
-  <header class="w-full max-w-3xl mb-6 flex flex-col items-center">
-    <span class="text-2xl font-bold text-yellow uppercase mb-2 mt-6 site-title">DitterBitter Sports Bet Tracker</span>
-    <a href="https://shuffle.com/?r=ditter" target="_blank" class="block mt-2 text-purple font-semibold text-lg hover:underline" style="letter-spacing: 0.01em;">Bet here using code ditter</a>
-  </header>
-
-  <!-- BET SUMMARY CARDS -->
-  <section class="w-full max-w-3xl mb-6 flex flex-row gap-4 justify-between">
-    <div class="flex-1 p-4 bg-green rounded-xl shadow-md text-center" style="box-shadow:0 4px 16px -2px #16a34a66;">
-      <div class="text-2xl font-bold" id="winsCount">0</div>
-      <div class="summary-label">WINS</div>
-    </div>
-    <div class="flex-1 p-4 bg-red rounded-xl shadow-md text-center" style="box-shadow:0 4px 16px -2px #dc262688;">
-      <div class="text-2xl font-bold" id="lossesCount">0</div>
-      <div class="summary-label">LOSSES</div>
-    </div>
-    <div class="flex-1 p-4 bg-yellow rounded-xl shadow-md text-center" style="box-shadow:0 4px 16px -2px #fde04777;">
-      <div class="text-2xl font-bold" id="pendingCount">0</div>
-      <div class="summary-label">PENDING</div>
-    </div>
-  </section>
-
-  <!-- PROFIT/LOSS CHART -->
-  <section class="w-full max-w-3xl mb-8 p-6 bg-card rounded-2xl shadow-xl" style="box-shadow:0 4px 24px -2px #a259ff33;">
-    <h2 class="text-xl font-bold mb-2 text-center site-title" style="font-size:1.3rem;">Total P/L: <span id="totalPnLValue"></span></h2>
-    <div class="overflow-x-auto">
-      <canvas id="profitLossChart" style="min-width: 300px; max-height: 220px;"></canvas>
-    </div>
-  </section>
-
-  <!-- BET HISTORY CARDS -->
-  <section class="w-full max-w-3xl p-0">
-    <h2 class="text-2xl font-bold mb-4 text-center site-title" style="font-size:1.2rem;">Bet History</h2>
-    <div id="betListContainer">
-      <div id="betList" class="flex flex-col gap-4 p-4">
-        <div id="loading" class="text-center text-gray">Loading bets...</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ADMIN ADD BET (hidden for public) -->
-  <section id="addBetSection" class="w-full max-w-3xl mt-8 mb-8 p-6 bg-card rounded-2xl shadow-xl hidden">
-    <h2 class="text-xl font-semibold mb-3 text-center site-title" style="font-size:1.12rem;">Add a New Bet</h2>
-    <form id="addBetForm" class="flex flex-col gap-4">
-      <input type="text" id="betName" class="p-2 rounded-lg bg-gray border-none text-md" placeholder="Bet Description" required>
-      <div class="flex gap-4">
-        <input type="number" id="betAmount" step="any" class="p-2 rounded-lg bg-gray border-none text-md w-full" placeholder="Amount ($)" required>
-        <input type="number" id="betPayout" step="any" class="p-2 rounded-lg bg-gray border-none text-md w-full" placeholder="Payout ($)" required>
-        <input type="number" id="betOdds" step="any" class="p-2 rounded-lg bg-gray border-none text-md w-full" placeholder="Odds (x.xx)" required>
-      </div>
-      <div class="flex gap-4 items-center">
-        <label class="text-sm font-semibold">Status:</label>
-        <label><input type="radio" name="status" value="pending" checked> Pending</label>
-        <label><input type="radio" name="status" value="win"> Win</label>
-        <label><input type="radio" name="status" value="loss"> Loss</label>
-        <label><input type="radio" name="status" value="void"> Void</label>
-      </div>
-      <button type="submit" class="px-4 py-2 bg-purple rounded-lg shadow-md text-white font-bold uppercase text-sm hover:bg-purple/90 transition-all">Add Bet</button>
-    </form>
-  </section>
-
-  <!-- LOGIN/LOGOUT -->
-  <section class="w-full max-w-3xl flex flex-row gap-4 justify-center mb-6">
-    <button id="loginBtn" class="login-btn">Admin Login</button>
-    <button id="logoutBtn" class="logout-btn hidden">Logout</button>
-  </section>
-
-  <!-- Firebase/Bet Logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    setLogLevel('error');
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBE4fOsTvv8ItHgauORXzU8kbRk8XpmcLQ",
-      authDomain: "sports-bet-tracker-afbdc.firebaseapp.com",
-      projectId: "sports-bet-tracker-afbdc",
-      storageBucket: "sports-bet-tracker-afbdc.appspot.com",
-      messagingSenderId: "964504350414",
-      appId: "1:964504350414:web:3fddd84a0bbd0869cf6a9f",
-      measurementId: "G-72P953MQ68"
-    };
-
-    const ADMIN_UID = "8UvpHh4uf4gb0mTuOoBxjTgxVpc2";
-    const BETS_PATH = "artifacts/main/public/data/bets";
-
-    let app, db, auth, currentUser, profitLossChart, isAdmin = false;
-    let lastBetsCache = [];
-    const addBetSection = document.getElementById('addBetSection');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const betList = document.getElementById('betList');
-
-    function getStatusBadge(status) {
-      switch (status) {
-        case 'win': return '<span class="badge badge-win">WIN</span>';
-        case 'loss': return '<span class="badge badge-loss">LOSS</span>';
-        case 'pending': return '<span class="badge badge-pending">PENDING</span>';
-        case 'void': return '<span class="badge badge-void">VOID</span>';
-        default: return '';
-      }
-    }
-
-    function formatDate(ts) {
-      if (!ts) return '';
-      const d = ts.seconds ? new Date(ts.seconds * 1000) : new Date();
-      return d.toLocaleString([], { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-    }
-
-    function renderBets(bets) {
-      betList.innerHTML = '';
-      if (bets.length === 0) {
-        betList.innerHTML = '<div class="text-center text-gray">No bets added yet.</div>';
-        return;
-      }
-      bets.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-      for (const bet of bets) {
-        const odds = bet.odds !== undefined ? Number(bet.odds).toFixed(2) : bet.amount && bet.payout ? (bet.amount > 0 ? (bet.payout / bet.amount).toFixed(2) : '') : '';
-        const payoutShow = bet.payout !== undefined ? `$${parseFloat(bet.payout).toFixed(2)}` : '—';
-        const amountShow = bet.amount !== undefined ? `$${parseFloat(bet.amount).toFixed(2)}` : '—';
-        const dateShow = formatDate(bet.timestamp);
-
-        betList.innerHTML += `
-          <div class="bet-card rounded-xl shadow-md p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div class="flex-1">
-              <div class="flex flex-row gap-2 items-center mb-1">
-                <span class="font-bold text-md">${bet.name || ''}</span>
-                ${getStatusBadge(bet.status)}
-              </div>
-              <div class="text-sm text-gray-200 mb-1"><span class="hide-mobile">Placed:</span> ${dateShow}</div>
-              <div class="flex flex-row gap-6 text-sm mt-2">
-                <div>Stake: <span class="font-semibold">${amountShow}</span></div>
-                <div>Odds: <span class="font-semibold">${odds}x</span></div>
-                <div>Payout: <span class="font-semibold">${payoutShow}</span></div>
-              </div>
-            </div>
-          </div>`;
-      }
-    }
-
-    function updateSummary(bets) {
-      let wins = 0, losses = 0, pending = 0;
-      for (const b of bets) {
-        if (b.status === 'win') wins++;
-        else if (b.status === 'loss') losses++;
-        else if (b.status === 'pending') pending++;
-      }
-      document.getElementById('winsCount').textContent = wins;
-      document.getElementById('lossesCount').textContent = losses;
-      document.getElementById('pendingCount').textContent = pending;
-    }
-
-    function updateChart(bets) {
-      const totalWins = bets.filter(b => b.status === 'win').reduce((sum, bet) => sum + (bet.payout - bet.amount), 0);
-      const totalLosses = bets.filter(b => b.status === 'loss').reduce((sum, bet) => sum + bet.amount, 0);
-      const netPnL = totalWins - totalLosses;
-      const totalPnLValue = document.getElementById('totalPnLValue');
-      totalPnLValue.textContent = `$${netPnL.toFixed(2)}`;
-      totalPnLValue.className = netPnL >= 0 ? 'text-green font-bold' : 'text-red font-bold';
-
-      const data = {
-        labels: ['Total Profit', 'Total Loss'],
-        datasets: [{
-          label: 'Total Amount ($)',
-          data: [totalWins, totalLosses],
-          backgroundColor: [
-            'rgba(34, 197, 94, 0.7)',
-            'rgba(239, 68, 68, 0.7)',
-          ],
-          borderColor: [
-            'rgb(34, 197, 94)',
-            'rgb(239, 68, 68)',
-          ],
-          borderWidth: 1
-        }]
-      };
-      const config = {
-        type: 'bar',
-        data: data,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: { color: 'rgba(255,255,255,0.1)' },
-              ticks: { color: '#d1d5db' }
-            },
-            x: {
-              grid: { color: 'rgba(255,255,255,0.1)' },
-              ticks: { color: '#d1d5db' }
-            }
-          },
-          plugins: { legend: { display: false } }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ditterbitter's Sports Bet Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-      };
-      const chartCanvas = document.getElementById('profitLossChart');
-      if (profitLossChart) profitLossChart.destroy();
-      profitLossChart = new Chart(chartCanvas, config);
-    }
 
-    // Firebase init
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
+        /* Custom styles for smaller status buttons */
+        .status-btn {
+            padding: 0.25rem 0.5rem; /* Reduced padding */
+            font-size: 0.75rem; /* Smaller font size */
+            line-height: 1rem;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div id="app" class="w-full max-w-4xl p-6 bg-gray-800 rounded-2xl shadow-xl flex flex-col items-center">
+        <h1 class="text-3xl font-bold text-center mb-2">Ditterbitter's Sports Bet Tracker</h1>
+        <p class="text-sm text-gray-400 text-center mb-6">Use code "ditter" at shuffle.com</p>
 
-    // Auth UI logic
-    function updateAuthUI(user) {
-      isAdmin = !!(user && user.uid === ADMIN_UID);
-      if (isAdmin) {
-        addBetSection.classList.remove('hidden');
-        loginBtn.classList.add('hidden');
-        logoutBtn.classList.remove('hidden');
-      } else {
-        addBetSection.classList.add('hidden');
-        loginBtn.classList.remove('hidden');
-        logoutBtn.classList.add('hidden');
-      }
-      renderBets(lastBetsCache);
-    }
+        <!-- User ID display for debugging and sharing -->
+        <div id="userIdDisplay" class="text-xs text-gray-400 mb-4 text-center"></div>
 
-    onAuthStateChanged(auth, user => {
-      currentUser = user;
-      updateAuthUI(user);
-    });
+        <!-- Bet Summary Section -->
+        <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-2 mb-6 text-center">
+            <div class="p-3 bg-green-600 rounded-xl shadow-lg">
+                <p class="text-xl font-bold" id="winsCount">0</p>
+                <p class="text-xs font-semibold">WINS</p>
+            </div>
+            <div class="p-3 bg-red-600 rounded-xl shadow-lg">
+                <p class="text-xl font-bold" id="lossesCount">0</p>
+                <p class="text-xs font-semibold">LOSSES</p>
+            </div>
+            <div class="p-3 bg-yellow-500 rounded-xl shadow-lg">
+                <p class="text-xl font-bold" id="pendingCount">0</p>
+                <p class="text-xs font-semibold">PENDING</p>
+            </div>
+        </div>
 
-    // Realtime listener
-    function setupRealtimeListener() {
-      const betsRef = collection(db, BETS_PATH);
-      onSnapshot(betsRef, (snapshot) => {
-        const bets = [];
-        snapshot.forEach(docSnap => bets.push({ id: docSnap.id, ...docSnap.data() }));
-        lastBetsCache = bets;
-        renderBets(bets);
-        updateSummary(bets);
-        updateChart(bets);
-      });
-    }
+        <!-- Profit/Loss Chart -->
+        <div class="w-full p-4 bg-gray-700 rounded-xl shadow-inner mb-6">
+            <h2 class="text-xl font-semibold mb-2 text-center">Total P/L</h2>
+            <canvas id="profitLossChart" style="max-height: 250px;"></canvas>
+        </div>
 
-    // Add Bet (admin only)
-    document.getElementById('addBetForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!isAdmin) return;
-      const betName = document.getElementById('betName').value;
-      const betAmount = document.getElementById('betAmount').value;
-      const betPayout = document.getElementById('betPayout').value;
-      const betOdds = document.getElementById('betOdds').value;
-      const status = document.querySelector('input[name="status"]:checked').value;
-      try {
-        const betsRef = collection(db, BETS_PATH);
-        await addDoc(betsRef, {
-          name: betName,
-          amount: parseFloat(betAmount),
-          payout: parseFloat(betPayout),
-          odds: parseFloat(betOdds),
-          status: status,
-          timestamp: serverTimestamp()
+        <!-- Add Bet Section -->
+        <div class="w-full p-4 bg-gray-700 rounded-xl shadow-inner mb-6">
+            <h2 class="text-xl font-semibold mb-3 text-center">Add a New Bet</h2>
+            <form id="addBetForm" class="space-y-3">
+                <div>
+                    <label for="betName" class="block text-xs font-medium mb-1">Bet Description</label>
+                    <input type="text" id="betName" class="w-full p-2 rounded-lg bg-gray-600 border border-gray-500 text-sm focus:outline-none focus:ring focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="betAmount" class="block text-xs font-medium mb-1">Amount ($)</label>
+                    <input type="number" id="betAmount" step="any" class="w-full p-2 rounded-lg bg-gray-600 border border-gray-500 text-sm focus:outline-none focus:ring focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="betPayout" class="block text-xs font-medium mb-1">Payout ($)</label>
+                    <input type="number" id="betPayout" step="any" class="w-full p-2 rounded-lg bg-gray-600 border border-gray-500 text-sm focus:outline-none focus:ring focus:ring-blue-500" required>
+                </div>
+                <div class="flex items-center space-x-2 text-sm">
+                    <input type="radio" id="pending" name="status" value="pending" checked class="h-4 w-4 text-blue-600 border-gray-500 focus:ring-blue-500">
+                    <label for="pending" class="text-sm font-medium">Pending</label>
+                    <input type="radio" id="win" name="status" value="win" class="h-4 w-4 text-blue-600 border-gray-500 focus:ring-blue-500">
+                    <label for="win" class="text-sm font-medium">Win</label>
+                    <input type="radio" id="loss" name="status" value="loss" class="h-4 w-4 text-blue-600 border-gray-500 focus:ring-blue-500">
+                    <label for="loss" class="text-sm font-medium">Loss</label>
+                </div>
+                <button type="submit" class="w-full p-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md text-sm transition-all duration-200">Add Bet</button>
+            </form>
+        </div>
+
+        <!-- Bet List Section -->
+        <div class="w-full p-4 bg-gray-700 rounded-xl shadow-inner">
+            <h2 class="text-xl font-semibold mb-3 text-center">Bet History</h2>
+            <div id="betList" class="space-y-2">
+                <div id="loading" class="text-center text-gray-400">Loading bets...</div>
+                <!-- Bets will be dynamically added here -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Error/Message Modal -->
+    <div id="messageModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-sm text-center">
+            <p id="messageText" class="text-lg font-semibold mb-4"></p>
+            <button id="closeModal" class="p-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors duration-200">Close</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        setLogLevel('debug');
+
+        // Global variables for Firebase and Chart
+        let app, db, auth, userId, profitLossChart;
+
+        // Custom modal for messages
+        const messageModal = document.getElementById('messageModal');
+        const messageText = document.getElementById('messageText');
+        const closeModalButton = document.getElementById('closeModal');
+
+        const showMessage = (message) => {
+            messageText.textContent = message;
+            messageModal.classList.remove('hidden');
+        };
+
+        closeModalButton.addEventListener('click', () => {
+            messageModal.classList.add('hidden');
         });
-        document.getElementById('addBetForm').reset();
-      } catch (e) {
-        alert("Error adding bet. Please try again.");
-      }
-    });
 
-    // Admin login/logout logic
-    loginBtn.onclick = async function() {
-      const email = prompt("Enter admin email:");
-      const password = prompt("Enter password:");
-      if (!email || !password) return;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("Logged in as admin.");
-        location.reload();
-      } catch (e) {
-        alert("Login failed. Check your credentials.");
-      }
-    };
-    logoutBtn.onclick = async function() {
-      await signOut(auth);
-      alert("Logged out.");
-      location.reload();
-    };
+        // Firebase Initialization and Authentication
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-    setupRealtimeListener();
-  </script>
+        const initFirebase = async () => {
+            try {
+                if (Object.keys(firebaseConfig).length > 0) {
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    auth.onAuthStateChanged(async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            document.getElementById('userIdDisplay').textContent = `User ID: ${userId}`;
+                            setupRealtimeListener();
+                        } else {
+                            // User is signed out
+                            document.getElementById('userIdDisplay').textContent = "User not authenticated.";
+                        }
+                    });
+                } else {
+                    showMessage("Firebase config is missing. The app will not work.");
+                }
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                showMessage(`Firebase initialization failed: ${error.message}`);
+            }
+        };
+
+        const setupRealtimeListener = () => {
+            const betsRef = collection(db, `artifacts/${appId}/public/data/bets`);
+            onSnapshot(betsRef, (snapshot) => {
+                const bets = [];
+                snapshot.forEach(doc => {
+                    bets.push({ id: doc.id, ...doc.data() });
+                });
+                renderBets(bets);
+                updateSummary(bets);
+                updateChart(bets);
+            }, (error) => {
+                console.error("Error fetching bets:", error);
+                showMessage(`Failed to load bets: ${error.message}`);
+            });
+        };
+
+        const renderBets = (bets) => {
+            const betList = document.getElementById('betList');
+            betList.innerHTML = '';
+            
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) {
+                loadingElement.style.display = 'none';
+            }
+
+            if (bets.length === 0) {
+                betList.innerHTML = '<p class="text-center text-gray-500">No bets added yet.</p>';
+                return;
+            }
+
+            // Sort bets by date added (assuming Firebase adds a timestamp)
+            const sortedBets = bets.sort((a, b) => b.timestamp?.toDate() - a.timestamp?.toDate());
+
+            sortedBets.forEach(bet => {
+                const betItem = document.createElement('div');
+                betItem.className = `p-3 rounded-lg shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 ${getBetColor(bet.status)}`;
+
+                const amountText = bet.amount !== undefined ? `$${bet.amount.toFixed(2)}` : 'N/A';
+                const payoutText = bet.payout !== undefined ? `$${bet.payout.toFixed(2)}` : 'N/A';
+                const netProfitText = bet.status === 'win' ? `$${(bet.payout - bet.amount).toFixed(2)}` : '';
+                const profitColor = bet.payout > bet.amount ? 'text-green-400' : 'text-red-400';
+
+                betItem.innerHTML = `
+                    <!-- Bet Name, Amount, and Payout -->
+                    <div class="flex-grow text-center sm:text-left">
+                        <p class="font-bold text-sm sm:text-base">${bet.name}</p>
+                        <p class="text-xs text-gray-300">Amount: ${amountText} / Payout: ${payoutText} <span class="${profitColor}">${netProfitText}</span></p>
+                    </div>
+                    
+                    <!-- Status buttons and delete button -->
+                    <div class="flex items-center space-x-1 justify-center sm:justify-start">
+                        <button class="status-btn rounded-lg text-xs transition-colors duration-200 ${bet.status === 'pending' ? 'bg-yellow-500' : 'bg-transparent border border-yellow-500'}" data-status="pending" data-id="${bet.id}">Pending</button>
+                        <button class="status-btn rounded-lg text-xs transition-colors duration-200 ${bet.status === 'win' ? 'bg-green-600' : 'bg-transparent border border-green-600'}" data-status="win" data-id="${bet.id}">Win</button>
+                        <button class="status-btn rounded-lg text-xs transition-colors duration-200 ${bet.status === 'loss' ? 'bg-red-600' : 'bg-transparent border border-red-600'}" data-status="loss" data-id="${bet.id}">Loss</button>
+                        <button class="delete-btn p-1 text-red-500 hover:text-red-700 transition-colors duration-200" data-id="${bet.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                betList.appendChild(betItem);
+            });
+
+            // Add event listeners to the new buttons
+            betList.querySelectorAll('.status-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const id = e.target.dataset.id;
+                    const status = e.target.dataset.status;
+                    const betDocRef = doc(db, `artifacts/${appId}/public/data/bets`, id);
+                    try {
+                        await updateDoc(betDocRef, { status: status });
+                    } catch (e) {
+                        console.error("Error updating document: ", e);
+                        showMessage("Error updating bet status. Please try again.");
+                    }
+                });
+            });
+
+            betList.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const id = e.target.dataset.id;
+                    const betDocRef = doc(db, `artifacts/${appId}/public/data/bets`, id);
+                    try {
+                        await deleteDoc(betDocRef);
+                    } catch (e) {
+                        console.error("Error deleting document: ", e);
+                        showMessage("Error deleting bet. Please try again.");
+                    }
+                });
+            });
+        };
+
+        const getBetColor = (status) => {
+            switch (status) {
+                case 'win': return 'bg-green-700';
+                case 'loss': return 'bg-red-700';
+                default: return 'bg-yellow-700';
+            }
+        };
+
+        const updateSummary = (bets) => {
+            const wins = bets.filter(b => b.status === 'win').length;
+            const losses = bets.filter(b => b.status === 'loss').length;
+            const pending = bets.filter(b => b.status === 'pending').length;
+
+            document.getElementById('winsCount').textContent = wins;
+            document.getElementById('lossesCount').textContent = losses;
+            document.getElementById('pendingCount').textContent = pending;
+        };
+
+        const updateChart = (bets) => {
+            const totalWins = bets.filter(b => b.status === 'win').reduce((sum, bet) => sum + (bet.payout - bet.amount), 0);
+            const totalLosses = bets.filter(b => b.status === 'loss').reduce((sum, bet) => sum + bet.amount, 0);
+            
+            const data = {
+                labels: ['Total Profit', 'Total Loss'],
+                datasets: [{
+                    label: 'Total Amount ($)',
+                    data: [totalWins, totalLosses],
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.6)', // Green
+                        'rgba(239, 68, 68, 0.6)', // Red
+                    ],
+                    borderColor: [
+                        'rgb(34, 197, 94)',
+                        'rgb(239, 68, 68)',
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#cbd5e1'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#cbd5e1'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            };
+
+            const chartCanvas = document.getElementById('profitLossChart');
+            if (profitLossChart) {
+                profitLossChart.destroy();
+            }
+            profitLossChart = new Chart(chartCanvas, config);
+        };
+
+
+        // Form Submission
+        document.getElementById('addBetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const betName = document.getElementById('betName').value;
+            const betAmount = document.getElementById('betAmount').value;
+            const betPayout = document.getElementById('betPayout').value;
+            const status = document.querySelector('input[name="status"]:checked').value;
+
+            if (!betName || !betAmount || !betPayout) {
+                showMessage("Please fill in all fields.");
+                return;
+            }
+
+            try {
+                const betsRef = collection(db, `artifacts/${appId}/public/data/bets`);
+                await addDoc(betsRef, {
+                    name: betName,
+                    amount: parseFloat(betAmount),
+                    payout: parseFloat(betPayout),
+                    status: status,
+                    timestamp: new Date()
+                });
+                document.getElementById('addBetForm').reset();
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showMessage("Error adding bet. Please try again.");
+            }
+        });
+
+        // Initialize on page load
+        window.onload = initFirebase;
+    </script>
 </body>
 </html>
